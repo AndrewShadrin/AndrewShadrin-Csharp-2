@@ -19,6 +19,9 @@ namespace Asteroids
         /// </summary>
         protected Size Size;
 
+        /// <summary>
+        /// Хранит изображение объекта
+        /// </summary>
         protected Image image;
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Выполняет обновление положения объекта согласно направлению движения
+        /// Выполняет обновление положения объекта согласно направлению движения. Реализует логику отскакивания объекта от границ.
         /// </summary>
         public virtual void Update()
         {

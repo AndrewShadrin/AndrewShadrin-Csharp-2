@@ -40,20 +40,36 @@ namespace Asteroids
             Height = form.ClientSize.Height;
             // Связываем буфер в памяти с графическим объектом, чтобы рисовать в буфере
             Buffer = _context.Allocate(g, new Rectangle(0, 0, Width, Height));
-            Load();
         }
 
         /// <summary>
         /// Производит загрузку игровых объектов
         /// </summary>
-        public static void Load()
+        public static void LoadGame()
         {
             Random rnd = new Random();
             _objs = new List<BaseObject>();
             for (int i = 0; i < 15; i++)
                 _objs.Add(new Star(new Point(1020, rnd.Next(760)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
             for (int i = 0; i < 30; i++)
-                _objs.Add(new Asteroid(new Point(rnd.Next(1004), rnd.Next(748)), new Point(rnd.Next(1,30), rnd.Next(1,30)), new Size(20, 20)));
+                _objs.Add(new Asteroid(new Point(rnd.Next(994), rnd.Next(730)), new Point(rnd.Next(-10,10), rnd.Next(-10,10)), new Size(30, 30)));
+        }
+
+        /// <summary>
+        /// Производит загрузку игровых объектов заставки
+        /// </summary>
+        public static void LoadSplash()
+        {
+            Random rnd = new Random();
+            _objs = new List<BaseObject>();
+            for (int i = 0; i < 15; i++)
+                _objs.Add(new Star(new Point(1020, rnd.Next(760)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+            for (int i = 0; i < 10; i++)
+                _objs.Add(new Asteroid(new Point(rnd.Next(944), rnd.Next(688)), new Point(rnd.Next(-5,5), rnd.Next(-5,5)), new Size(80, 80)));
+            // добавим заголовок
+            _objs.Add(new Inscription(new Point(300, 300), new Point(0, 0),"Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel),Brushes.Blue));
+            // добавим авторство
+            _objs.Add(new Inscription(new Point(700, 700), new Point(0, 0),"Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel),Brushes.YellowGreen));
         }
 
         /// <summary>
@@ -61,16 +77,14 @@ namespace Asteroids
         /// </summary>
         public static void Draw()
         {
-
             Buffer.Graphics.Clear(Color.Black);
             foreach (BaseObject obj in _objs)
                 obj.Draw();
             Buffer.Render();
-
         }
 
         /// <summary>
-        /// Производит расчеты перемещений объектов
+        /// Выполняет пересчет положения объектов
         /// </summary>
         public static void Update()
         {

@@ -13,11 +13,7 @@ namespace Asteroids
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form form = new Form1();
-            Game.Init(form);
-            form.Show();
-            Game.Draw();
-            Application.Run(form);
+            Application.Run(new Form1());
         }
     }
 }

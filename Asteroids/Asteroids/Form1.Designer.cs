@@ -33,8 +33,6 @@
             this.btnStartGame = new System.Windows.Forms.Button();
             this.btnRecords = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
-            this.lblNameGame = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // timer1
@@ -71,45 +69,20 @@
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
-            // lblNameGame
-            // 
-            this.lblNameGame.AutoSize = true;
-            this.lblNameGame.BackColor = System.Drawing.SystemColors.Desktop;
-            this.lblNameGame.Font = new System.Drawing.Font("Arial", 50F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblNameGame.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.lblNameGame.Location = new System.Drawing.Point(256, 301);
-            this.lblNameGame.Name = "lblNameGame";
-            this.lblNameGame.Size = new System.Drawing.Size(457, 76);
-            this.lblNameGame.TabIndex = 1;
-            this.lblNameGame.Text = "АСТЕРОИДЫ";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.Desktop;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.ForeColor = System.Drawing.SystemColors.Info;
-            this.label1.Location = new System.Drawing.Point(601, 647);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(226, 20);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Разработал Шадрин Андрей";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.ClientSize = new System.Drawing.Size(1024, 768);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.lblNameGame);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnRecords);
             this.Controls.Add(this.btnStartGame);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Астероиды";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -119,8 +92,6 @@
         private System.Windows.Forms.Button btnStartGame;
         private System.Windows.Forms.Button btnRecords;
         private System.Windows.Forms.Button btnExit;
-        private System.Windows.Forms.Label lblNameGame;
-        private System.Windows.Forms.Label label1;
     }
 }
 
