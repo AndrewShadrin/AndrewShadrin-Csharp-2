@@ -45,5 +45,13 @@ namespace Asteroids
             PointF pointF1 = new PointF(Pos.X, Pos.Y);
             Game.Buffer.Graphics.DrawString(Text, Font, Brush, pointF1);
         }
+
+        /// <summary>
+        /// Производит обновление положения объекта
+        /// </summary>
+        public override void Update()
+        {
+            
+        }
     }
 }
