@@ -70,7 +70,7 @@ namespace Asteroids
             Random rnd = new Random();
             InitListOfObjects();
             for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width-6, rnd.Next(Height-6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
-            for (int i = 0; i < 30; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-31), rnd.Next(Height-31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(30, 30)));
+            for (int i = 0; i < 30; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-31), rnd.Next(Height-31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
             bullets.Add(new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1)));
         }
 

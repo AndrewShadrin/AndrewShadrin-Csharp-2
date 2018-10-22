@@ -17,6 +17,8 @@ namespace Asteroids
         /// </summary>
         public int AngleSpeed { get; set; }
 
+        Random rnd = new Random();
+
         /// <summary>
         /// Конструктор объекта
         /// </summary>
@@ -26,7 +28,7 @@ namespace Asteroids
         public Asteroid(Point pos,Point dir,Size size):base(pos,dir,size)
         {
             this.image = new Bitmap(Image.FromFile("astero.png"), Size);
-            AngleSpeed = 20;
+            AngleSpeed = rnd.Next(-10,10);
             Angle = 0;
             Power = 1;
         }
@@ -60,7 +62,13 @@ namespace Asteroids
             }
             else
             {
-                Game.Buffer.Graphics.DrawImage(image, Pos);
+                //Game.Buffer.Graphics.DrawImage(image, Pos);
+                Game.Buffer.Graphics.ResetTransform();
+                Game.Buffer.Graphics.TranslateTransform(Pos.X + Size.Width / 2, Pos.Y + Size.Height / 2);
+                Game.Buffer.Graphics.RotateTransform(Angle);
+                Game.Buffer.Graphics.TranslateTransform(-Size.Width/2, -Size.Height/2);
+                Game.Buffer.Graphics.DrawImage(image,0,0, Size.Width, Size.Height);
+                Game.Buffer.Graphics.ResetTransform();
             }
         }
 
