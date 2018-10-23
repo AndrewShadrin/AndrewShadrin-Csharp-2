@@ -120,10 +120,12 @@ namespace Asteroids
                     }
                 }
             }
+            Random rnd = new Random();
             foreach (BaseObject item in toDelete)
             {
                 ((IDisposable)item).Dispose();
                 asteroids.Remove(item);
+                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
             }
             foreach (Bullet obj in bullets) obj.Update();
         }

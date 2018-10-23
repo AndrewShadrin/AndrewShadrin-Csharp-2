@@ -52,17 +52,12 @@ namespace Asteroids
         /// </summary>
         public override void Draw()
         {
-            // как-то с вращением пока не получается
-            //Graphics graphicsContainer = Graphics.FromImage(image);
-            //graphicsContainer.RotateTransform(Angle);
-            //Game.Buffer.Graphics.DrawImage(image, Pos);
             if (image == null)
             {
                 Game.Buffer.Graphics.DrawEllipse(Pens.White, Pos.X, Pos.Y, Size.Width, Size.Height);
             }
             else
             {
-                //Game.Buffer.Graphics.DrawImage(image, Pos);
                 Game.Buffer.Graphics.ResetTransform();
                 Game.Buffer.Graphics.TranslateTransform(Pos.X + Size.Width / 2, Pos.Y + Size.Height / 2);
                 Game.Buffer.Graphics.RotateTransform(Angle);
@@ -72,11 +67,9 @@ namespace Asteroids
             }
         }
 
-
         void IDisposable.Dispose()
         {
             this.image = null;
         }
-
     }
 }
