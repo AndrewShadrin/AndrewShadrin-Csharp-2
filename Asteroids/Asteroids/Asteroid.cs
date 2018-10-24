@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Asteroids
 {
-    class Asteroid:BaseObject,IDisposable
+    class Asteroid : BaseObject, IDisposable, IComparable<Asteroid>
     {
         public int Power { get; set; }
 
@@ -70,6 +70,15 @@ namespace Asteroids
         void IDisposable.Dispose()
         {
             this.image = null;
+        }
+
+        int IComparable<Asteroid>.CompareTo(Asteroid obj)
+        {
+            if (Power > obj.Power)
+                return 1;
+            if (Power < obj.Power)
+                return -1;
+            return 0;
         }
     }
 }

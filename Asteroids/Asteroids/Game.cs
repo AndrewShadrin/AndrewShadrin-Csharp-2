@@ -8,12 +8,27 @@ namespace Asteroids
     static class Game
     {
         private static BufferedGraphicsContext _context;
+
+        /// <summary>
+        /// Графический буфер для вывода графики
+        /// </summary>
         public static BufferedGraphics Buffer;
-        // Свойства
-        // Ширина и высота игрового поля
+
+        /// <summary>
+        /// Ширина игрового поля
+        /// </summary>
         public static int Width { get; set; }
+
+        /// <summary>
+        /// Высота игрового поля
+        /// </summary>
         public static int Height { get; set; }
-        
+
+        /// <summary>
+        /// Космический корабль игрока
+        /// </summary>
+        private static Ship _ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
+
         /// <summary>
         /// Массив игровых объектов
         /// </summary>
@@ -129,5 +144,23 @@ namespace Asteroids
             }
             foreach (Bullet obj in bullets) obj.Update();
         }
+        
+        /// <summary>
+        /// Обработчик нажатия клавиш в форме
+        /// </summary>
+        /// <param name="sender">источник события</param>
+        /// <param name="e">событие нажатия клавиши</param>
+        private static void GameForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            //выход по клавише Escape
+            if (e.KeyData == Keys.Escape)
+            {
+                (sender as Form).Close();
+            }
+            if (e.KeyCode == Keys.ControlKey) bullets.Add(new Bullet(new Point(_ship.Rect.X + 10, _ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1)));
+            if (e.KeyCode == Keys.Up) _ship.Up();
+            if (e.KeyCode == Keys.Down) _ship.Down();
+        }
+
     }
 }

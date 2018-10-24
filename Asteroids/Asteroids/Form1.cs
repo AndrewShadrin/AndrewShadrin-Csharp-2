@@ -60,20 +60,6 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Обработчик нажатия клавиш в форме
-        /// </summary>
-        /// <param name="sender">источник события</param>
-        /// <param name="e">событие нажатия клавиши</param>
-        private void GameForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            //выход по клавише Escape
-            if (e.KeyData == Keys.Escape)
-            {
-                (sender as Form).Close();
-            }
-        }
-
-        /// <summary>
         /// Обработчик закрытия формы. Производит инициализацию заставки по закрытию ирговой формы.
         /// </summary>
         /// <param name="sender"></param>
