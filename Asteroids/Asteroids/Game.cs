@@ -44,6 +44,11 @@ namespace Asteroids
         /// </summary>
         public static List<BaseObject> bullets;
 
+        /// <summary>
+        /// Генератор псевдослучайных чисел
+        /// </summary>
+        static Random rnd = new Random();
+
         static Game()
         {
         }
@@ -68,6 +73,18 @@ namespace Asteroids
         }
 
         /// <summary>
+        /// Производит очистку ресурсов перед закрытием формы игры
+        /// </summary>
+        internal static void EndGame()
+        {
+            background.Clear();
+            asteroids.Clear();
+            bullets.Clear();
+            _ship = null;
+            GC.Collect();
+        }
+
+        /// <summary>
         /// Выполняет инициализацию списков объектов
         /// </summary>
         private static void InitListOfObjects()
@@ -82,11 +99,11 @@ namespace Asteroids
         /// </summary>
         public static void LoadGame()
         {
-            Random rnd = new Random();
             InitListOfObjects();
             for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width-6, rnd.Next(Height-6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
             for (int i = 0; i < 30; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-31), rnd.Next(Height-31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
             bullets.Add(new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1)));
+            _ship = new Ship(new Point(20, 300),new Point(20,20), new Size(50, 26));
         }
 
         /// <summary>
@@ -94,7 +111,6 @@ namespace Asteroids
         /// </summary>
         public static void LoadSplash()
         {
-            Random rnd = new Random();
             InitListOfObjects();
             for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
             for (int i = 0; i < 10; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-81), rnd.Next(Height-81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
@@ -102,6 +118,7 @@ namespace Asteroids
             background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
             // добавим авторство
             background.Add(new Inscription(new Point(700, 700), new Point(0, 0), "Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.YellowGreen));
+            _ship = null;
         }
 
         /// <summary>
@@ -113,6 +130,9 @@ namespace Asteroids
             foreach (BaseObject obj in background) obj.Draw();
             foreach (BaseObject obj in asteroids) obj.Draw();
             foreach (BaseObject obj in bullets) obj.Draw();
+            _ship?.Draw();
+            if (_ship != null)
+                Buffer.Graphics.DrawString("Energy:" + _ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
             Buffer.Render();
         }
 
@@ -123,26 +143,40 @@ namespace Asteroids
         {
             List<BaseObject> toDelete = new List<BaseObject>();
             foreach (BaseObject obj in background) obj.Update();
+            foreach (Bullet obj in bullets) obj.Update();
             foreach (Asteroid asteroid in asteroids)
             {
                 asteroid.Update();
                 foreach (Bullet bullet in bullets)
                 {
-                    if (asteroid.Collision(bullet))
+                    if (!toDelete.Contains(bullet) && !toDelete.Contains(asteroid) && bullet.Collision(asteroid))
                     {
                         System.Media.SystemSounds.Hand.Play();
                         toDelete.Add(asteroid);
+                        toDelete.Add(bullet);
                     }
                 }
+                if (_ship!=null && _ship.Collision(asteroid))
+                {
+                    _ship?.EnergyLow(rnd.Next(1, 10));
+                    System.Media.SystemSounds.Asterisk.Play();
+                    if (_ship.Energy <= 0) _ship?.Die();
+                }
             }
-            Random rnd = new Random();
+            // удаляем подбитые астероиды и добавляем новые
             foreach (BaseObject item in toDelete)
             {
+                if (item is Asteroid)
+                {
+                    asteroids.Remove(item);
+                    asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
+                }
+                else if (item is Bullet)
+                {
+                    bullets.Remove(item);
+                }
                 ((IDisposable)item).Dispose();
-                asteroids.Remove(item);
-                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
             }
-            foreach (Bullet obj in bullets) obj.Update();
         }
         
         /// <summary>
@@ -150,7 +184,7 @@ namespace Asteroids
         /// </summary>
         /// <param name="sender">источник события</param>
         /// <param name="e">событие нажатия клавиши</param>
-        private static void GameForm_KeyDown(object sender, KeyEventArgs e)
+        public static void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
             //выход по клавише Escape
             if (e.KeyData == Keys.Escape)

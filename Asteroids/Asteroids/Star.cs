@@ -2,6 +2,9 @@
 
 namespace Asteroids
 {
+    /// <summary>
+    /// Описывает класс "Звезда"
+    /// </summary>
     class Star:BaseObject
     {
         /// <summary>

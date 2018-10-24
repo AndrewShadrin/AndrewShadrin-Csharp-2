@@ -54,7 +54,7 @@ namespace Asteroids
             Game.Init(gameForm);
             Game.LoadGame();
             gameForm.FormClosing += GameForm_FormClosing;
-            gameForm.KeyDown += GameForm_KeyDown;
+            gameForm.KeyDown += Game.GameForm_KeyDown;
             this.Visible = false;
             gameForm.Show();
         }
@@ -66,6 +66,9 @@ namespace Asteroids
         /// <param name="e"></param>
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Game.EndGame();
+
+            // инициализируем заставку
             Game.Init(this);
             Game.LoadSplash();
             this.Visible = true;
