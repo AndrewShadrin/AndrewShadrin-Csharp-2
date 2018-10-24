@@ -17,7 +17,17 @@ namespace Asteroids
         /// <summary>
         /// Массив игровых объектов
         /// </summary>
-        public static List<BaseObject> _objs;
+        public static List<BaseObject> background;
+        
+        /// <summary>
+        /// Массив игровых объектов
+        /// </summary>
+        public static List<BaseObject> asteroids;
+        
+        /// <summary>
+        /// Массив игровых объектов
+        /// </summary>
+        public static List<BaseObject> bullets;
 
         static Game()
         {
@@ -43,33 +53,40 @@ namespace Asteroids
         }
 
         /// <summary>
+        /// Выполняет инициализацию списков объектов
+        /// </summary>
+        private static void InitListOfObjects()
+        {
+            background = new List<BaseObject>();
+            asteroids = new List<BaseObject>();
+            bullets = new List<BaseObject>();
+        }
+
+        /// <summary>
         /// Производит загрузку игровых объектов
         /// </summary>
         public static void LoadGame()
         {
             Random rnd = new Random();
-            _objs = new List<BaseObject>();
-            for (int i = 0; i < 15; i++)
-                _objs.Add(new Star(new Point(1020, rnd.Next(760)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
-            for (int i = 0; i < 30; i++)
-                _objs.Add(new Asteroid(new Point(rnd.Next(994), rnd.Next(730)), new Point(rnd.Next(-10,10), rnd.Next(-10,10)), new Size(30, 30)));
+            InitListOfObjects();
+            for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width-6, rnd.Next(Height-6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+            for (int i = 0; i < 30; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-31), rnd.Next(Height-31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
+            bullets.Add(new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1)));
         }
 
         /// <summary>
-        /// Производит загрузку игровых объектов заставки
+        /// Производит загрузку объектов заставки
         /// </summary>
         public static void LoadSplash()
         {
             Random rnd = new Random();
-            _objs = new List<BaseObject>();
-            for (int i = 0; i < 15; i++)
-                _objs.Add(new Star(new Point(1020, rnd.Next(760)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
-            for (int i = 0; i < 10; i++)
-                _objs.Add(new Asteroid(new Point(rnd.Next(944), rnd.Next(688)), new Point(rnd.Next(-5,5), rnd.Next(-5,5)), new Size(80, 80)));
+            InitListOfObjects();
+            for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+            for (int i = 0; i < 10; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-81), rnd.Next(Height-81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
             // добавим заголовок
-            _objs.Add(new Inscription(new Point(300, 300), new Point(0, 0),"Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel),Brushes.Blue));
+            background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
             // добавим авторство
-            _objs.Add(new Inscription(new Point(700, 700), new Point(0, 0),"Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel),Brushes.YellowGreen));
+            background.Add(new Inscription(new Point(700, 700), new Point(0, 0), "Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.YellowGreen));
         }
 
         /// <summary>
@@ -78,8 +95,9 @@ namespace Asteroids
         public static void Draw()
         {
             Buffer.Graphics.Clear(Color.Black);
-            foreach (BaseObject obj in _objs)
-                obj.Draw();
+            foreach (BaseObject obj in background) obj.Draw();
+            foreach (BaseObject obj in asteroids) obj.Draw();
+            foreach (BaseObject obj in bullets) obj.Draw();
             Buffer.Render();
         }
 
@@ -88,8 +106,28 @@ namespace Asteroids
         /// </summary>
         public static void Update()
         {
-            foreach (BaseObject obj in _objs)
-                obj.Update();
+            List<BaseObject> toDelete = new List<BaseObject>();
+            foreach (BaseObject obj in background) obj.Update();
+            foreach (Asteroid asteroid in asteroids)
+            {
+                asteroid.Update();
+                foreach (Bullet bullet in bullets)
+                {
+                    if (asteroid.Collision(bullet))
+                    {
+                        System.Media.SystemSounds.Hand.Play();
+                        toDelete.Add(asteroid);
+                    }
+                }
+            }
+            Random rnd = new Random();
+            foreach (BaseObject item in toDelete)
+            {
+                ((IDisposable)item).Dispose();
+                asteroids.Remove(item);
+                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
+            }
+            foreach (Bullet obj in bullets) obj.Update();
         }
     }
 }
