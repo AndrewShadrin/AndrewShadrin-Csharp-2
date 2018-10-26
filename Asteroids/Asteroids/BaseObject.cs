@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Asteroids
 {
@@ -64,5 +65,8 @@ namespace Asteroids
         /// Выполняет обновление положения объекта согласно направлению движения. Реализует логику отскакивания объекта от границ.
         /// </summary>
         public abstract void Update();
+
+        public delegate void Message();
+        
     }
 }

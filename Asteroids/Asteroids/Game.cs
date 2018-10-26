@@ -30,31 +30,60 @@ namespace Asteroids
         private static Ship _ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
 
         /// <summary>
-        /// Массив игровых объектов
+        /// Массив игровых объектов заднего фона
         /// </summary>
         public static List<BaseObject> background;
         
         /// <summary>
-        /// Массив игровых объектов
+        /// Массив игровых объектов типа "астероид"
         /// </summary>
         public static List<BaseObject> asteroids;
         
         /// <summary>
-        /// Массив игровых объектов
+        /// Массив игровых объектов типа "снаряд"
         /// </summary>
         public static List<BaseObject> bullets;
+
+        /// <summary>
+        /// Список игровых объектов для удаления
+        /// </summary>
+        private static List<BaseObject> toDelete = new List<BaseObject>();
 
         /// <summary>
         /// Генератор псевдослучайных чисел
         /// </summary>
         static Random rnd = new Random();
 
-        static Game()
+        public static int Score { get; private set; }
+
+        /// <summary>
+        /// Основной игровой таймер
+        /// </summary>
+        private static Timer _timer = new Timer();
+
+        /// <summary>
+        /// Обработчик события таймера. Запускает отрисовку и пересчет положения объектов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void _timer_Tick(object sender, EventArgs e)
         {
+            Game.Draw();
+            Game.Update();
         }
 
         /// <summary>
-        /// Производит инициализацию формы и графических объектов
+        /// Конструктор класса
+        /// </summary>
+        static Game()
+        {
+            _timer.Interval = 20;
+            _timer.Tick += _timer_Tick;
+            Ship.MessageDie += Finish;
+        }
+
+        /// <summary>
+        /// Производит инициализацию формы и графических объектов для вывода графики
         /// </summary>
         /// <param name="form">форма для инициализации</param>
         public static void Init(Form form)
@@ -75,17 +104,29 @@ namespace Asteroids
         /// <summary>
         /// Производит очистку ресурсов перед закрытием формы игры
         /// </summary>
-        internal static void EndGame()
+        internal static void ClearResourses()
         {
+            // вычистим игровые объекты
             background.Clear();
             asteroids.Clear();
             bullets.Clear();
             _ship = null;
+            // запустим сбор мусора
             GC.Collect();
         }
 
         /// <summary>
-        /// Выполняет инициализацию списков объектов
+        /// Выполняет остановку игрового мира и вывод сообщения о конце игры
+        /// </summary>
+        public static void Finish()
+        {
+            _timer.Stop();
+            Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline), Brushes.White, 360, 300);
+            Buffer.Render();
+        }
+
+        /// <summary>
+        /// Выполняет инициализацию списков игровых объектов
         /// </summary>
         private static void InitListOfObjects()
         {
@@ -95,30 +136,48 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Производит загрузку игровых объектов
+        /// Производит инициализацию и загрузку игровых объектов
         /// </summary>
         public static void LoadGame()
         {
             InitListOfObjects();
-            for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width-6, rnd.Next(Height-6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
-            for (int i = 0; i < 30; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-31), rnd.Next(Height-31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
-            bullets.Add(new Bullet(new Point(0, 200), new Point(5, 0), new Size(4, 1)));
+            for (int i = 0; i < 15; i++)
+            {
+                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+                ToBeUpdate += (background[background.Count - 1].Update);
+            }
+            for (int i = 0; i < 30; i++)
+            {
+                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
+                ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
+            }
             _ship = new Ship(new Point(20, 300),new Point(20,20), new Size(50, 26));
+            Score = 0;
+            _timer.Enabled = true;
         }
 
         /// <summary>
-        /// Производит загрузку объектов заставки
+        /// Производит инициализацию и загрузку объектов заставки
         /// </summary>
         public static void LoadSplash()
         {
             InitListOfObjects();
-            for (int i = 0; i < 15; i++) background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
-            for (int i = 0; i < 10; i++) asteroids.Add(new Asteroid(new Point(rnd.Next(Width-81), rnd.Next(Height-81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
+            for (int i = 0; i < 15; i++)
+            {
+                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+                ToBeUpdate += (background[background.Count - 1].Update);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 81), rnd.Next(Height - 81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
+                ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
+            }
             // добавим заголовок
             background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
             // добавим авторство
             background.Add(new Inscription(new Point(700, 700), new Point(0, 0), "Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.YellowGreen));
             _ship = null;
+            _timer.Enabled = true;
         }
 
         /// <summary>
@@ -132,44 +191,60 @@ namespace Asteroids
             foreach (BaseObject obj in bullets) obj.Draw();
             _ship?.Draw();
             if (_ship != null)
-                Buffer.Graphics.DrawString("Energy:" + _ship.Energy, SystemFonts.DefaultFont, Brushes.White, 0, 0);
+            {
+                Buffer.Graphics.DrawString($"Energy: {_ship.Energy} Score: {Score}", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, 0, 0);
+            }
             Buffer.Render();
         }
 
+        public delegate void NeedToBeUpdated();
+
         /// <summary>
-        /// Выполняет пересчет положения объектов
+        /// Событие, вызывающее пересчет положения объектов игрового мира
+        /// </summary>
+        public static event NeedToBeUpdated ToBeUpdate;
+
+        /// <summary>
+        /// Выполняет пересчет данных игровых объектов
         /// </summary>
         public static void Update()
         {
-            List<BaseObject> toDelete = new List<BaseObject>();
-            foreach (BaseObject obj in background) obj.Update();
-            foreach (Bullet obj in bullets) obj.Update();
+            // пересчет положения объектов
+            ToBeUpdate?.Invoke();
+            
+            // проверка столкновений
             foreach (Asteroid asteroid in asteroids)
             {
-                asteroid.Update();
                 foreach (Bullet bullet in bullets)
                 {
+                    // проверяем столкновение снарядов с астероидом
                     if (!toDelete.Contains(bullet) && !toDelete.Contains(asteroid) && bullet.Collision(asteroid))
                     {
                         System.Media.SystemSounds.Hand.Play();
                         toDelete.Add(asteroid);
                         toDelete.Add(bullet);
+                        Score++;
                     }
                 }
-                if (_ship!=null && _ship.Collision(asteroid))
+                // проверяем столкновение астероида с кораблем
+                if (_ship!= null && !toDelete.Contains(asteroid) && _ship.Collision(asteroid))
                 {
                     _ship?.EnergyLow(rnd.Next(1, 10));
+                    toDelete.Add(asteroid);
                     System.Media.SystemSounds.Asterisk.Play();
                     if (_ship.Energy <= 0) _ship?.Die();
                 }
             }
-            // удаляем подбитые астероиды и добавляем новые
+            
+            // удаляем снаряды, подбитые астероиды и добавляем новые
             foreach (BaseObject item in toDelete)
             {
+                ToBeUpdate -= item.Update;
                 if (item is Asteroid)
                 {
                     asteroids.Remove(item);
                     asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
+                    ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
                 }
                 else if (item is Bullet)
                 {
@@ -177,6 +252,7 @@ namespace Asteroids
                 }
                 ((IDisposable)item).Dispose();
             }
+            toDelete.Clear();
         }
         
         /// <summary>
@@ -191,7 +267,11 @@ namespace Asteroids
             {
                 (sender as Form).Close();
             }
-            if (e.KeyCode == Keys.ControlKey) bullets.Add(new Bullet(new Point(_ship.Rect.X + 10, _ship.Rect.Y + 4), new Point(4, 0), new Size(4, 1)));
+            if (e.KeyCode == Keys.ControlKey)
+            {
+                bullets.Add(new Bullet(new Point(_ship.Rect.X + 50, _ship.Rect.Y + 14), new Point(10, 0), new Size(25, 25)));
+                ToBeUpdate += (bullets[bullets.Count - 1].Update);
+            }
             if (e.KeyCode == Keys.Up) _ship.Up();
             if (e.KeyCode == Keys.Down) _ship.Down();
         }

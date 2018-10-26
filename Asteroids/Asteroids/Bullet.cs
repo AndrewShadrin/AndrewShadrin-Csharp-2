@@ -16,6 +16,7 @@ namespace Asteroids
         /// <param name="size">размер</param>
         public Bullet(Point pos, Point dir, Size size) : base(pos, dir, size)
         {
+            image = new Bitmap(imageFire, Size);
         }
 
         /// <summary>
@@ -23,7 +24,14 @@ namespace Asteroids
         /// </summary>
         public override void Draw()
         {
-            Game.Buffer.Graphics.DrawRectangle(Pens.OrangeRed, Pos.X, Pos.Y, Size.Width, Size.Height);
+            if (image == null)
+            {
+                Game.Buffer.Graphics.DrawRectangle(Pens.OrangeRed, Pos.X, Pos.Y, Size.Width, Size.Height);
+            }
+            else
+            {
+                Game.Buffer.Graphics.DrawImage(image, Pos.X, Pos.Y, Size.Width, Size.Height);
+            }
         }
 
         /// <summary>
@@ -41,6 +49,11 @@ namespace Asteroids
         {
             this.image = null;
         }
+
+        /// <summary>
+        /// Хранит картинку для класса
+        /// </summary>
+        static Image imageFire = Image.FromFile("fire.png");
 
     }
 }

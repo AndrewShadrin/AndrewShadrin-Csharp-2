@@ -15,18 +15,6 @@ namespace Asteroids
             this.Height = 768;
             Game.Init(this);
             Game.LoadSplash();
-            timer1.Enabled = true;
-        }
-
-        /// <summary>
-        /// Обработчик события таймера. Запускает отрисовку и пересчет положения объектов
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            Game.Draw();
-            Game.Update();
         }
 
         /// <summary>
@@ -60,13 +48,13 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Обработчик закрытия формы. Производит инициализацию заставки по закрытию ирговой формы.
+        /// Обработчик закрытия формы. Производит инициализацию заставки по закрытию игровой формы.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Game.EndGame();
+            Game.ClearResourses();
 
             // инициализируем заставку
             Game.Init(this);

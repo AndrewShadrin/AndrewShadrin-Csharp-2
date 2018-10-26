@@ -73,8 +73,11 @@ namespace Asteroids
             if (Pos.Y < Game.Height) Pos.Y = Pos.Y + Dir.Y;
         }
 
+        public static event Message MessageDie;
+
         public void Die()
         {
+            MessageDie?.Invoke();
         }
     }
 }
