@@ -112,6 +112,8 @@ namespace Asteroids
             bullets.Clear();
             _ship = null;
             // запустим сбор мусора
+            ToBeUpdate = null;
+            ToBeDraw = null;
             GC.Collect();
         }
 
@@ -143,15 +145,19 @@ namespace Asteroids
             InitListOfObjects();
             for (int i = 0; i < 15; i++)
             {
-                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(1,20), 0), new Size(5, 5)));
                 ToBeUpdate += (background[background.Count - 1].Update);
+                ToBeDraw += (background[background.Count - 1].Draw);
             }
             for (int i = 0; i < 30; i++)
             {
                 asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
                 ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
+                ToBeDraw += (asteroids[asteroids.Count - 1].Draw);
             }
-            _ship = new Ship(new Point(20, 300),new Point(20,20), new Size(50, 26));
+            _ship = new Ship(new Point(20, 300),new Point(0,10), new Size(50, 26));
+            ToBeUpdate += _ship.Update;
+            ToBeDraw += _ship.Draw;
             Score = 0;
             _timer.Enabled = true;
         }
@@ -164,18 +170,22 @@ namespace Asteroids
             InitListOfObjects();
             for (int i = 0; i < 15; i++)
             {
-                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(20), 0), new Size(5, 5)));
+                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(1,20), 0), new Size(5, 5)));
                 ToBeUpdate += (background[background.Count - 1].Update);
+                ToBeDraw += (background[background.Count - 1].Draw);
             }
             for (int i = 0; i < 10; i++)
             {
                 asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 81), rnd.Next(Height - 81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
                 ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
+                ToBeDraw += (asteroids[asteroids.Count - 1].Draw);
             }
             // добавим заголовок
             background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
+            ToBeDraw += (background[background.Count - 1].Draw);
             // добавим авторство
             background.Add(new Inscription(new Point(700, 700), new Point(0, 0), "Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.YellowGreen));
+            ToBeDraw += (background[background.Count - 1].Draw);
             _ship = null;
             _timer.Enabled = true;
         }
@@ -186,10 +196,12 @@ namespace Asteroids
         public static void Draw()
         {
             Buffer.Graphics.Clear(Color.Black);
-            foreach (BaseObject obj in background) obj.Draw();
-            foreach (BaseObject obj in asteroids) obj.Draw();
-            foreach (BaseObject obj in bullets) obj.Draw();
-            _ship?.Draw();
+            //foreach (BaseObject obj in background) obj.Draw();
+            //foreach (BaseObject obj in asteroids) obj.Draw();
+            //foreach (BaseObject obj in bullets) obj.Draw();
+            //_ship?.Draw();
+            ToBeDraw?.Invoke();
+
             if (_ship != null)
             {
                 Buffer.Graphics.DrawString($"Energy: {_ship.Energy} Score: {Score}", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, 0, 0);
@@ -197,8 +209,16 @@ namespace Asteroids
             Buffer.Render();
         }
 
+        /// <summary>
+        /// Делегат для сыбытия пересчета
+        /// </summary>
         public delegate void NeedToBeUpdated();
 
+        /// <summary>
+        /// Событие, вызывающее перерисовку объектов игрового мира
+        /// </summary>
+        public static event NeedToBeUpdated ToBeDraw;
+        
         /// <summary>
         /// Событие, вызывающее пересчет положения объектов игрового мира
         /// </summary>
@@ -240,11 +260,13 @@ namespace Asteroids
             foreach (BaseObject item in toDelete)
             {
                 ToBeUpdate -= item.Update;
+                ToBeDraw -= item.Draw;
                 if (item is Asteroid)
                 {
                     asteroids.Remove(item);
                     asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
-                    ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
+                    ToBeUpdate += asteroids[asteroids.Count - 1].Update;
+                    ToBeDraw += asteroids[asteroids.Count - 1].Draw;
                 }
                 else if (item is Bullet)
                 {
@@ -270,7 +292,8 @@ namespace Asteroids
             if (e.KeyCode == Keys.ControlKey)
             {
                 bullets.Add(new Bullet(new Point(_ship.Rect.X + 50, _ship.Rect.Y + 14), new Point(10, 0), new Size(25, 25)));
-                ToBeUpdate += (bullets[bullets.Count - 1].Update);
+                ToBeUpdate += bullets[bullets.Count - 1].Update;
+                ToBeDraw += bullets[bullets.Count - 1].Draw;
             }
             if (e.KeyCode == Keys.Up) _ship.Up();
             if (e.KeyCode == Keys.Down) _ship.Down();

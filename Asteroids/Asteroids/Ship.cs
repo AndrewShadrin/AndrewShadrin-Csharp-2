@@ -54,7 +54,10 @@ namespace Asteroids
 
         public override void Update()
         {
-            
+            if (Pos.Y + Dir.Y > 0 && Pos.Y + Dir.Y < Game.Height - Size.Height)
+            {
+                Pos.Y = Pos.Y + Dir.Y;
+            }
         }
 
         /// <summary>
@@ -62,7 +65,10 @@ namespace Asteroids
         /// </summary>
         public void Up()
         {
-            if (Pos.Y > 0) Pos.Y = Pos.Y - Dir.Y;
+            if (Dir.Y > 0) 
+            {
+                Dir.Y = -Dir.Y;
+            } 
         }
 
         /// <summary>
@@ -70,7 +76,10 @@ namespace Asteroids
         /// </summary>
         public void Down()
         {
-            if (Pos.Y < Game.Height) Pos.Y = Pos.Y + Dir.Y;
+            if (Dir.Y < 0)
+            {
+                Dir.Y = -Dir.Y;
+            }
         }
 
         public static event Message MessageDie;

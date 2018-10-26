@@ -11,8 +11,8 @@ namespace Asteroids
         public Form1()
         {
             InitializeComponent();
-            this.Width = 1024;
-            this.Height = 768;
+            Width = 1024;
+            Height = 768;
             Game.Init(this);
             Game.LoadSplash();
         }
@@ -34,6 +34,7 @@ namespace Asteroids
         /// <param name="e"></param>
         private void btnStartGame_Click(object sender, EventArgs e)
         {
+            Game.ClearResourses();
             Form gameForm = new Form();
             gameForm.Width = 1024;
             gameForm.Height = 768;
@@ -43,7 +44,7 @@ namespace Asteroids
             Game.LoadGame();
             gameForm.FormClosing += GameForm_FormClosing;
             gameForm.KeyDown += Game.GameForm_KeyDown;
-            this.Visible = false;
+            Visible = false;
             gameForm.Show();
         }
 
