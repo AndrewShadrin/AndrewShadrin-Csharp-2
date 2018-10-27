@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace Asteroids
 {
@@ -67,6 +66,5 @@ namespace Asteroids
         public abstract void Update();
 
         public delegate void Message();
-        
     }
 }

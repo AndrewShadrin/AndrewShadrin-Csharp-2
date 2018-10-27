@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Asteroids
 {
@@ -52,6 +53,9 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Выполняет изменение положения корабля
+        /// </summary>
         public override void Update()
         {
             if (Pos.Y + Dir.Y > 0 && Pos.Y + Dir.Y < Game.Height - Size.Height)
@@ -61,7 +65,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Выполняет смещение корабля вверх
+        /// Выполняет смену направления движения корабля вверх
         /// </summary>
         public void Up()
         {
@@ -72,7 +76,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Выполняет смещение корабля вниз
+        /// Выполняет смену направления движения корабля вниз
         /// </summary>
         public void Down()
         {
@@ -82,10 +86,22 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Событие для сообщения о смерти корабля
+        /// </summary>
         public static event Message MessageDie;
 
+        /// <summary>
+        /// Событие для записи сообщения в лог
+        /// </summary>
+        public event Action<string> WriteLog;
+
+        /// <summary>
+        /// Выполняет оповещение о смерти корабля
+        /// </summary>
         public void Die()
         {
+            WriteLog?.Invoke("Корабль подбит");
             MessageDie?.Invoke();
         }
     }

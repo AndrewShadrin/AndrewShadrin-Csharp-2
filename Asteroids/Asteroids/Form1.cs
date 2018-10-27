@@ -15,6 +15,7 @@ namespace Asteroids
             Height = 768;
             Game.Init(this);
             Game.LoadSplash();
+            Game.WriteLog("Запуск заставки");
         }
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace Asteroids
         /// <param name="e"></param>
         private void btnExit_Click(object sender, EventArgs e)
         {
+            Game.WriteLog("Выход из приложения");
             Application.Exit();
         }
 
@@ -35,16 +37,19 @@ namespace Asteroids
         private void btnStartGame_Click(object sender, EventArgs e)
         {
             Game.ClearResourses();
-            Form gameForm = new Form();
-            gameForm.Width = 1024;
-            gameForm.Height = 768;
-            gameForm.FormBorderStyle = FormBorderStyle.None;
-            gameForm.StartPosition = FormStartPosition.CenterScreen;
+            Form gameForm = new Form
+            {
+                Width = 1024,
+                Height = 768,
+                FormBorderStyle = FormBorderStyle.None,
+                StartPosition = FormStartPosition.CenterScreen
+            };
             Game.Init(gameForm);
             Game.LoadGame();
             gameForm.FormClosing += GameForm_FormClosing;
             gameForm.KeyDown += Game.GameForm_KeyDown;
             Visible = false;
+            Game.WriteLog("Игра начата");
             gameForm.Show();
         }
 
@@ -56,11 +61,12 @@ namespace Asteroids
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Game.ClearResourses();
+            Game.WriteLog("Выход из игры");
 
             // инициализируем заставку
             Game.Init(this);
             Game.LoadSplash();
-            this.Visible = true;
+            Visible = true;
         }
     }
 }

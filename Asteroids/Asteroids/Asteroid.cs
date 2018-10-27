@@ -86,7 +86,8 @@ namespace Asteroids
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.image = null;
+            WriteLog?.Invoke("Астероид уничтожен");
+            image = null;
         }
 
         /// <summary>
@@ -102,5 +103,10 @@ namespace Asteroids
                 return -1;
             return 0;
         }
+
+        /// <summary>
+        /// Событие для записи сообщения в лог
+        /// </summary>
+        public event Action<string> WriteLog;
     }
 }

@@ -47,7 +47,8 @@ namespace Asteroids
         /// </summary>
         void IDisposable.Dispose()
         {
-            this.image = null;
+            WriteLog?.Invoke("Снаряд уничтожен");
+            image = null;
         }
 
         /// <summary>
@@ -55,5 +56,9 @@ namespace Asteroids
         /// </summary>
         static Image imageFire = Image.FromFile("fire.png");
 
+        /// <summary>
+        /// Событие для записи сообщения в лог
+        /// </summary>
+        public event Action<string> WriteLog;
     }
 }

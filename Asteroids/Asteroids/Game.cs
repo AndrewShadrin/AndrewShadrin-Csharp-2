@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace Asteroids
 {
+    /// <summary>
+    /// Класс, предоставляющий основной игровой функционал
+    /// </summary>
     static class Game
     {
+        #region Game properties
+
+        /// <summary>
+        /// Контекст приложения для формирования графического буфера
+        /// </summary>
         private static BufferedGraphicsContext _context;
 
         /// <summary>
@@ -25,9 +34,38 @@ namespace Asteroids
         public static int Height { get; set; }
 
         /// <summary>
+        /// Шрифт надписей на игровом поле
+        /// </summary>
+        public static Font FontInscriptionScore { get; private set; }
+
+        /// <summary>
+        /// Шрифт надписи об окончании игры
+        /// </summary>
+        public static Font FontInscriptionFinish { get; private set; }
+
+        /// <summary>
+        /// Генератор псевдослучайных чисел
+        /// </summary>
+        static Random rnd = new Random();
+
+        /// <summary>
+        /// Основной игровой таймер
+        /// </summary>
+        private static Timer _timer = new Timer();
+
+        /// <summary>
+        /// Указатель на запись лога в файл. Истина - в файл, ложь - вывод в консоль
+        /// </summary>
+        private static bool WriteLogToFile = false;
+
+        #endregion
+
+        #region GameObjects
+
+        /// <summary>
         /// Космический корабль игрока
         /// </summary>
-        private static Ship _ship = new Ship(new Point(10, 400), new Point(5, 5), new Size(10, 10));
+        private static Ship _ship;
 
         /// <summary>
         /// Массив игровых объектов заднего фона
@@ -50,27 +88,13 @@ namespace Asteroids
         private static List<BaseObject> toDelete = new List<BaseObject>();
 
         /// <summary>
-        /// Генератор псевдослучайных чисел
+        /// Хранит количество сбитых астероидов
         /// </summary>
-        static Random rnd = new Random();
-
         public static int Score { get; private set; }
 
-        /// <summary>
-        /// Основной игровой таймер
-        /// </summary>
-        private static Timer _timer = new Timer();
+        #endregion
 
-        /// <summary>
-        /// Обработчик события таймера. Запускает отрисовку и пересчет положения объектов
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void _timer_Tick(object sender, EventArgs e)
-        {
-            Game.Draw();
-            Game.Update();
-        }
+        #region Game initialisation methods
 
         /// <summary>
         /// Конструктор класса
@@ -80,6 +104,8 @@ namespace Asteroids
             _timer.Interval = 20;
             _timer.Tick += _timer_Tick;
             Ship.MessageDie += Finish;
+            FontInscriptionScore = new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel);
+            FontInscriptionFinish = new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline);
         }
 
         /// <summary>
@@ -102,32 +128,6 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Производит очистку ресурсов перед закрытием формы игры
-        /// </summary>
-        internal static void ClearResourses()
-        {
-            // вычистим игровые объекты
-            background.Clear();
-            asteroids.Clear();
-            bullets.Clear();
-            _ship = null;
-            // запустим сбор мусора
-            ToBeUpdate = null;
-            ToBeDraw = null;
-            GC.Collect();
-        }
-
-        /// <summary>
-        /// Выполняет остановку игрового мира и вывод сообщения о конце игры
-        /// </summary>
-        public static void Finish()
-        {
-            _timer.Stop();
-            Buffer.Graphics.DrawString("The End", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline), Brushes.White, 360, 300);
-            Buffer.Render();
-        }
-
-        /// <summary>
         /// Выполняет инициализацию списков игровых объектов
         /// </summary>
         private static void InitListOfObjects()
@@ -145,19 +145,13 @@ namespace Asteroids
             InitListOfObjects();
             for (int i = 0; i < 15; i++)
             {
-                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(1,20), 0), new Size(5, 5)));
-                ToBeUpdate += (background[background.Count - 1].Update);
-                ToBeDraw += (background[background.Count - 1].Draw);
+                AddGameObject(TypeOfObjects.Star);
             }
             for (int i = 0; i < 30; i++)
             {
-                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
-                ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
-                ToBeDraw += (asteroids[asteroids.Count - 1].Draw);
+                AddGameObject(TypeOfObjects.Asteroid);
             }
-            _ship = new Ship(new Point(20, 300),new Point(0,10), new Size(50, 26));
-            ToBeUpdate += _ship.Update;
-            ToBeDraw += _ship.Draw;
+            AddGameObject(TypeOfObjects.Ship);
             Score = 0;
             _timer.Enabled = true;
         }
@@ -170,15 +164,11 @@ namespace Asteroids
             InitListOfObjects();
             for (int i = 0; i < 15; i++)
             {
-                background.Add(new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(1,20), 0), new Size(5, 5)));
-                ToBeUpdate += (background[background.Count - 1].Update);
-                ToBeDraw += (background[background.Count - 1].Draw);
+                AddGameObject(TypeOfObjects.Star);
             }
             for (int i = 0; i < 10; i++)
             {
-                asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 81), rnd.Next(Height - 81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80)));
-                ToBeUpdate += (asteroids[asteroids.Count - 1].Update);
-                ToBeDraw += (asteroids[asteroids.Count - 1].Draw);
+                AddGameObject(TypeOfObjects.BigAsteroid);
             }
             // добавим заголовок
             background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
@@ -190,39 +180,77 @@ namespace Asteroids
             _timer.Enabled = true;
         }
 
+        #endregion
+
+        #region Auxiliary objects and methods
+
+        /// <summary>
+        /// Содержит названия типов объектов для создания
+        /// </summary>
+        enum TypeOfObjects
+        {
+            Asteroid,
+            BigAsteroid,
+            Bullet,
+            Ship,
+            Star
+        }
+
+        /// <summary>
+        /// Выполняет добавление игрового объекта
+        /// </summary>
+        /// <param name="type">описание типа создаваемого объекта</param>
+        static void AddGameObject(TypeOfObjects type)
+        {
+            BaseObject item;
+            switch (type)
+            {
+                case TypeOfObjects.Ship: item = new Ship(new Point(20, 300), new Point(0, 10), new Size(50, 26));
+                    _ship = (Ship)item;
+                    ((Ship)item).WriteLog += WriteLog;
+                    WriteLog("Создан корабль");
+                    break;
+                case TypeOfObjects.Asteroid: item = new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50));
+                    asteroids.Add(item);
+                    ((Asteroid)item).WriteLog += WriteLog;
+                    WriteLog("Создан обычный астероид");
+                    break;
+                case TypeOfObjects.Star: item = new Star(new Point(Width - 6, rnd.Next(Height - 6)), new Point(-rnd.Next(1, 20), 0), new Size(5, 5));
+                    background.Add(item);
+                    WriteLog("Создана звезда");
+                    break;
+                case TypeOfObjects.BigAsteroid: item = new Asteroid(new Point(rnd.Next(Width - 81), rnd.Next(Height - 81)), new Point(rnd.Next(-5, 5), rnd.Next(-5, 5)), new Size(80, 80));
+                    asteroids.Add(item);
+                    WriteLog("Создан большой астероид");
+                    break;
+                default: item = new Bullet(new Point(_ship.Rect.X + 50, _ship.Rect.Y + 14), new Point(10, 0), new Size(25, 25));
+                    bullets.Add(item);
+                    ((Bullet)item).WriteLog += WriteLog;
+                    WriteLog("Выпущен снаряд");
+                    break;
+            }
+            ToBeUpdate += item.Update;
+            ToBeDraw += item.Draw;
+        }
+
+        #endregion
+
+        #region Game world processing methods
+
         /// <summary>
         /// Отрисовывает графические объекты
         /// </summary>
         public static void Draw()
         {
             Buffer.Graphics.Clear(Color.Black);
-            //foreach (BaseObject obj in background) obj.Draw();
-            //foreach (BaseObject obj in asteroids) obj.Draw();
-            //foreach (BaseObject obj in bullets) obj.Draw();
-            //_ship?.Draw();
             ToBeDraw?.Invoke();
 
             if (_ship != null)
             {
-                Buffer.Graphics.DrawString($"Energy: {_ship.Energy} Score: {Score}", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, 0, 0);
+                Buffer.Graphics.DrawString($"Энергия: {_ship.Energy} Счёт: {Score}", FontInscriptionScore, Brushes.White, 0, 0);
             }
             Buffer.Render();
         }
-
-        /// <summary>
-        /// Делегат для сыбытия пересчета
-        /// </summary>
-        public delegate void NeedToBeUpdated();
-
-        /// <summary>
-        /// Событие, вызывающее перерисовку объектов игрового мира
-        /// </summary>
-        public static event NeedToBeUpdated ToBeDraw;
-        
-        /// <summary>
-        /// Событие, вызывающее пересчет положения объектов игрового мира
-        /// </summary>
-        public static event NeedToBeUpdated ToBeUpdate;
 
         /// <summary>
         /// Выполняет пересчет данных игровых объектов
@@ -276,7 +304,67 @@ namespace Asteroids
             }
             toDelete.Clear();
         }
+
+        /// <summary>
+        /// Производит очистку ресурсов перед закрытием формы игры
+        /// </summary>
+        internal static void ClearResourses()
+        {
+            // вычистим игровые объекты
+            background.Clear();
+            asteroids.Clear();
+            bullets.Clear();
+            _ship = null;
+            // запустим сбор мусора
+            ToBeUpdate = null;
+            ToBeDraw = null;
+            GC.Collect();
+        }
+
+        /// <summary>
+        /// Выполняет остановку игрового мира и вывод сообщения о конце игры
+        /// </summary>
+        public static void Finish()
+        {
+            _timer.Stop();
+            Draw();
+            Buffer.Graphics.DrawString("Игра окончена", FontInscriptionFinish, Brushes.Red, 220, 300);
+            Buffer.Render();
+        }
+
+        #endregion
+
+        #region Logging
+
+        /// <summary>
+        /// Выполняет запись строки в файл лога
+        /// </summary>
+        /// <param name="mess">строка для записи</param>
+        public static void WriteLog(string mess)
+        {
+            string[] content = { $"{DateTime.Now}: {mess}." };
+            if (WriteLogToFile) File.AppendAllLines("game_log.txt", content);
+            else Console.WriteLine($"{DateTime.Now}: {mess}");
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Событие, вызывающее перерисовку объектов игрового мира
+        /// </summary>
+        public static event Action ToBeDraw;
         
+        /// <summary>
+        /// Событие, вызывающее пересчет положения объектов игрового мира
+        /// </summary>
+        public static event Action ToBeUpdate;
+
+        #endregion
+
+        #region Event handlers
+
         /// <summary>
         /// Обработчик нажатия клавиш в форме
         /// </summary>
@@ -291,13 +379,23 @@ namespace Asteroids
             }
             if (e.KeyCode == Keys.ControlKey)
             {
-                bullets.Add(new Bullet(new Point(_ship.Rect.X + 50, _ship.Rect.Y + 14), new Point(10, 0), new Size(25, 25)));
-                ToBeUpdate += bullets[bullets.Count - 1].Update;
-                ToBeDraw += bullets[bullets.Count - 1].Draw;
+                AddGameObject(TypeOfObjects.Bullet);
             }
             if (e.KeyCode == Keys.Up) _ship.Up();
             if (e.KeyCode == Keys.Down) _ship.Down();
         }
 
+        /// <summary>
+        /// Обработчик события таймера. Запускает отрисовку и пересчет положения объектов
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void _timer_Tick(object sender, EventArgs e)
+        {
+            Game.Draw();
+            Game.Update();
+        }
+
+        #endregion
     }
 }
