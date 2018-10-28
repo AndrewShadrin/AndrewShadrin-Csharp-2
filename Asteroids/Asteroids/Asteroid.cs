@@ -3,8 +3,14 @@ using System.Drawing;
 
 namespace Asteroids
 {
-    class Asteroid:BaseObject,IDisposable
+    /// <summary>
+    /// Класс, который предоставляет функциональные возможности "Астероида"
+    /// </summary>
+    class Asteroid : BaseObject, IDisposable, IComparable<Asteroid>
     {
+        /// <summary>
+        /// Хранит силу астероида
+        /// </summary>
         public int Power { get; set; }
 
         /// <summary>
@@ -17,7 +23,15 @@ namespace Asteroids
         /// </summary>
         public int AngleSpeed { get; set; }
 
+        /// <summary>
+        /// Генератор псевдослучайных чисел
+        /// </summary>
         Random rnd = new Random();
+        
+        /// <summary>
+        /// Хранит картинку для класса астероид
+        /// </summary>
+        static Image imageAsteroid = Image.FromFile("astero.png");
 
         /// <summary>
         /// Конструктор объекта
@@ -27,7 +41,7 @@ namespace Asteroids
         /// <param name="size">Размер объекта</param>
         public Asteroid(Point pos,Point dir,Size size):base(pos,dir,size)
         {
-            this.image = new Bitmap(Image.FromFile("astero.png"), Size);
+            this.image = new Bitmap(imageAsteroid, Size);
             AngleSpeed = rnd.Next(-10,10);
             Angle = 0;
             Power = 1;
@@ -67,9 +81,32 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Выполняет очистку ресурсов объекта при удалении
+        /// </summary>
         void IDisposable.Dispose()
         {
-            this.image = null;
+            WriteLog?.Invoke("Астероид уничтожен");
+            image = null;
         }
+
+        /// <summary>
+        /// Сравнивает астероид с текущим объектом
+        /// </summary>
+        /// <param name="obj">астероид для сравнения</param>
+        /// <returns>1 если сила больше, -1 если сила меньше</returns>
+        int IComparable<Asteroid>.CompareTo(Asteroid obj)
+        {
+            if (Power > obj.Power)
+                return 1;
+            if (Power < obj.Power)
+                return -1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Событие для записи сообщения в лог
+        /// </summary>
+        public event Action<string> WriteLog;
     }
 }

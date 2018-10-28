@@ -1,19 +1,64 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Asteroids
 {
-    class Bullet : BaseObject
+    /// <summary>
+    /// Класс, который предоставляет функциональные возможности "Снаряда"
+    /// </summary>
+    class Bullet : BaseObject, IDisposable
     {
+        /// <summary>
+        /// Конструктор объекта "пуля"
+        /// </summary>
+        /// <param name="pos">начальная позиция пули</param>
+        /// <param name="dir">направление движения</param>
+        /// <param name="size">размер</param>
         public Bullet(Point pos, Point dir, Size size) : base(pos, dir, size)
         {
+            image = new Bitmap(imageFire, Size);
         }
+
+        /// <summary>
+        /// Производит отрисовку объекта
+        /// </summary>
         public override void Draw()
         {
-            Game.Buffer.Graphics.DrawRectangle(Pens.OrangeRed, Pos.X, Pos.Y, Size.Width, Size.Height);
+            if (image == null)
+            {
+                Game.Buffer.Graphics.DrawRectangle(Pens.OrangeRed, Pos.X, Pos.Y, Size.Width, Size.Height);
+            }
+            else
+            {
+                Game.Buffer.Graphics.DrawImage(image, Pos.X, Pos.Y, Size.Width, Size.Height);
+            }
         }
+
+        /// <summary>
+        /// Выполняет обновление положения объекта
+        /// </summary>
         public override void Update()
         {
-            Pos.X = Pos.X + 3;
+            Pos.X = Pos.X + Dir.X;
         }
+
+        /// <summary>
+        /// Выполняет очистку ресурсов объекта при удалении
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            WriteLog?.Invoke("Снаряд уничтожен");
+            image = null;
+        }
+
+        /// <summary>
+        /// Хранит картинку для класса
+        /// </summary>
+        static Image imageFire = Image.FromFile("fire.png");
+
+        /// <summary>
+        /// Событие для записи сообщения в лог
+        /// </summary>
+        public event Action<string> WriteLog;
     }
 }

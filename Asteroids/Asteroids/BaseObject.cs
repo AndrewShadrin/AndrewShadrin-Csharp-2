@@ -2,6 +2,9 @@
 
 namespace Asteroids
 {
+    /// <summary>
+    /// Описывает базовый класс объектов
+    /// </summary>
     abstract class BaseObject:ICollision
     {
         /// <summary>
@@ -37,8 +40,16 @@ namespace Asteroids
             Size = size;
         }
 
+        /// <summary>
+        /// Возвращает прямоугольную область расположения объекта
+        /// </summary>
         public Rectangle Rect => new Rectangle(Pos, Size);
 
+        /// <summary>
+        /// Определяет, было ли пересечение текущего объекта с другим объектом
+        /// </summary>
+        /// <param name="obj">объект - цель</param>
+        /// <returns>Истина, если есть пересечение</returns>
         public bool Collision(ICollision obj)
         {
             return obj.Rect.IntersectsWith(this.Rect);
@@ -53,5 +64,7 @@ namespace Asteroids
         /// Выполняет обновление положения объекта согласно направлению движения. Реализует логику отскакивания объекта от границ.
         /// </summary>
         public abstract void Update();
+
+        public delegate void Message();
     }
 }
