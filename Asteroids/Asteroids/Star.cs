@@ -1,11 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Asteroids
 {
     /// <summary>
     /// Описывает класс "Звезда"
     /// </summary>
-    class Star:BaseObject
+    class Star:BaseObject, IDisposable
     {
         /// <summary>
         /// Конструктор объекта
@@ -34,5 +35,14 @@ namespace Asteroids
             Pos.X = Pos.X + Dir.X;
             if (Pos.X < 0) Pos.X = Game.Width + Size.Width;
         }
+        
+        /// <summary>
+        /// Освобождает все ресурсы, используемые объектом Star
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            image?.Dispose();
+        }
+
     }
 }

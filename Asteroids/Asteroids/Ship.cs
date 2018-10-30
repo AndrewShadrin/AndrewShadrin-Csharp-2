@@ -6,7 +6,7 @@ namespace Asteroids
     /// <summary>
     /// Класс, который предоставляет функциональные возможности космического корабля
     /// </summary>
-    class Ship : BaseObject
+    class Ship : BaseObject, IDisposable
     {
         /// <summary>
         /// Хранит значение энергии корабля
@@ -58,10 +58,6 @@ namespace Asteroids
         /// </summary>
         public override void Update()
         {
-            if (Pos.Y + Dir.Y > 0 && Pos.Y + Dir.Y < Game.Height - Size.Height)
-            {
-                Pos.Y = Pos.Y + Dir.Y;
-            }
         }
 
         /// <summary>
@@ -69,10 +65,11 @@ namespace Asteroids
         /// </summary>
         public void Up()
         {
-            if (Dir.Y > 0) 
+            if (Pos.Y - Dir.Y > 0)
             {
-                Dir.Y = -Dir.Y;
-            } 
+                Pos.Y = Pos.Y - Dir.Y;
+            }
+            else Pos.Y = 0;
         }
 
         /// <summary>
@@ -80,10 +77,11 @@ namespace Asteroids
         /// </summary>
         public void Down()
         {
-            if (Dir.Y < 0)
+            if (Pos.Y + Dir.Y < Game.Height - Size.Height)
             {
-                Dir.Y = -Dir.Y;
+                Pos.Y = Pos.Y + Dir.Y;
             }
+            else Pos.Y = Game.Height - Size.Height;
         }
 
         /// <summary>
@@ -103,6 +101,15 @@ namespace Asteroids
         {
             WriteLog?.Invoke("Корабль подбит");
             MessageDie?.Invoke();
+        }
+
+        /// <summary>
+        /// Освобождает все ресурсы, используемые объектом Ship
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            WriteLog?.Invoke("Ship уничтожен");
+            image?.Dispose();
         }
     }
 }
