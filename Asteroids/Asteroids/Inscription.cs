@@ -1,11 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Asteroids
 {
     /// <summary>
     /// Определяет класс "Надпись"
     /// </summary>
-    class Inscription:BaseObject
+    class Inscription:BaseObject, IDisposable
     {
         /// <summary>
         /// Текст объекта для вывода
@@ -52,6 +53,16 @@ namespace Asteroids
         public override void Update()
         {
             
+        }
+
+        /// <summary>
+        /// Освобождает все ресурсы, используемые объектом Inscription
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            image?.Dispose();
+            Font?.Dispose();
+            Brush?.Dispose();
         }
     }
 }

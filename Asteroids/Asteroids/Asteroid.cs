@@ -82,12 +82,12 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Выполняет очистку ресурсов объекта при удалении
+        /// Освобождает все ресурсы, используемые объектом Asteroid
         /// </summary>
         void IDisposable.Dispose()
         {
             WriteLog?.Invoke("Астероид уничтожен");
-            image = null;
+            image.Dispose();
         }
 
         /// <summary>

@@ -83,9 +83,9 @@ namespace Asteroids
         public static List<BaseObject> bullets;
 
         /// <summary>
-        /// Список игровых объектов для удаления
+        /// Очередь игровых объектов для удаления
         /// </summary>
-        private static List<BaseObject> toDelete = new List<BaseObject>();
+        private static Queue<BaseObject> toDelete;
 
         /// <summary>
         /// Хранит количество сбитых астероидов
@@ -135,6 +135,7 @@ namespace Asteroids
             background = new List<BaseObject>();
             asteroids = new List<BaseObject>();
             bullets = new List<BaseObject>();
+            toDelete = new Queue<BaseObject>();
         }
 
         /// <summary>
@@ -173,9 +174,11 @@ namespace Asteroids
             // добавим заголовок
             background.Add(new Inscription(new Point(300, 300), new Point(0, 0), "Астероиды", new Font("Times New Roman", 72, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.Blue));
             ToBeDraw += (background[background.Count - 1].Draw);
+            //ToBeDispose += ((IDisposable)background[background.Count - 1]).Dispose;
             // добавим авторство
             background.Add(new Inscription(new Point(700, 700), new Point(0, 0), "Разработал Шадрин Андрей", new Font("Times New Roman", 24, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.YellowGreen));
             ToBeDraw += (background[background.Count - 1].Draw);
+            //ToBeDispose += ((IDisposable)background[background.Count - 1]).Dispose;
             _ship = null;
             _timer.Enabled = true;
         }
@@ -205,7 +208,7 @@ namespace Asteroids
             BaseObject item;
             switch (type)
             {
-                case TypeOfObjects.Ship: item = new Ship(new Point(20, 300), new Point(0, 10), new Size(50, 26));
+                case TypeOfObjects.Ship: item = new Ship(new Point(20, 300), new Point(0, 20), new Size(50, 26));
                     _ship = (Ship)item;
                     ((Ship)item).WriteLog += WriteLog;
                     WriteLog("Создан корабль");
@@ -231,6 +234,7 @@ namespace Asteroids
             }
             ToBeUpdate += item.Update;
             ToBeDraw += item.Draw;
+            ToBeDispose += ((IDisposable)item).Dispose;
         }
 
         #endregion
@@ -269,40 +273,49 @@ namespace Asteroids
                     if (!toDelete.Contains(bullet) && !toDelete.Contains(asteroid) && bullet.Collision(asteroid))
                     {
                         System.Media.SystemSounds.Hand.Play();
-                        toDelete.Add(asteroid);
-                        toDelete.Add(bullet);
+                        toDelete.Enqueue(asteroid);
+                        toDelete.Enqueue(bullet);
                         Score++;
+                    }
+                    if (!toDelete.Contains(bullet) && bullet.Rect.Location.X>Width)
+                    {
+                        toDelete.Enqueue(bullet);
                     }
                 }
                 // проверяем столкновение астероида с кораблем
                 if (_ship!= null && !toDelete.Contains(asteroid) && _ship.Collision(asteroid))
                 {
                     _ship?.EnergyLow(rnd.Next(1, 10));
-                    toDelete.Add(asteroid);
+                    toDelete.Enqueue(asteroid);
                     System.Media.SystemSounds.Asterisk.Play();
                     if (_ship.Energy <= 0) _ship?.Die();
                 }
             }
-            
+
             // удаляем снаряды, подбитые астероиды и добавляем новые
-            foreach (BaseObject item in toDelete)
+            while (toDelete.Count>0)
             {
-                ToBeUpdate -= item.Update;
-                ToBeDraw -= item.Draw;
-                if (item is Asteroid)
+                try
                 {
-                    asteroids.Remove(item);
-                    asteroids.Add(new Asteroid(new Point(rnd.Next(Width - 31), rnd.Next(Height - 31)), new Point(rnd.Next(-10, 10), rnd.Next(-10, 10)), new Size(50, 50)));
-                    ToBeUpdate += asteroids[asteroids.Count - 1].Update;
-                    ToBeDraw += asteroids[asteroids.Count - 1].Draw;
-                }
-                else if (item is Bullet)
-                {
-                    bullets.Remove(item);
-                }
+                    BaseObject item = toDelete.Dequeue();
+                    ToBeUpdate -= item.Update;
+                    ToBeDraw -= item.Draw;
+                    if (item is Asteroid)
+                    {
+                        asteroids.Remove(item);
+                        AddGameObject(TypeOfObjects.Asteroid);
+                    }
+                    else if (item is Bullet)
+                    {
+                        bullets.Remove(item);
+                    }
                 ((IDisposable)item).Dispose();
+                }
+                catch (Exception)
+                {
+                    break;
+                }
             }
-            toDelete.Clear();
         }
 
         /// <summary>
@@ -311,13 +324,15 @@ namespace Asteroids
         internal static void ClearResourses()
         {
             // вычистим игровые объекты
+            ToBeDispose?.Invoke();
             background.Clear();
             asteroids.Clear();
             bullets.Clear();
             _ship = null;
-            // запустим сбор мусора
             ToBeUpdate = null;
             ToBeDraw = null;
+            ToBeDispose = null;
+            // запустим сбор мусора
             GC.Collect();
         }
 
@@ -360,6 +375,11 @@ namespace Asteroids
         /// Событие, вызывающее пересчет положения объектов игрового мира
         /// </summary>
         public static event Action ToBeUpdate;
+
+        /// <summary>
+        /// Событие, вызывающее удаление объектов игрового мира
+        /// </summary>
+        public static event Action ToBeDispose;
 
         #endregion
 
