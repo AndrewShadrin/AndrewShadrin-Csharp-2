@@ -31,9 +31,13 @@ namespace EmployeeList
             Name = name;
         }
 
+        /// <summary>
+        /// Формирует строковое представление
+        /// </summary>
+        /// <returns>Строковое представление</returns>
         public override string ToString()
         {
-            return $"{ID} {Name}";
+            return $"{ID}: {Name}";
         }
     }
 }

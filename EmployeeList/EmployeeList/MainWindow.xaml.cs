@@ -48,5 +48,10 @@ namespace EmployeeList
                 MessageBox.Show("Не выбрано подразделение");
             }
         }
+
+        private void LastNameCM_Click(object sender, RoutedEventArgs e)
+        {
+            Company.Employees.GroupBy(et => et.LastName);
+        }
     }
 }

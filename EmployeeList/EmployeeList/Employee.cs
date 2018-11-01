@@ -67,10 +67,14 @@ namespace EmployeeList
             Department = department;
         }
 
-        public override string ToString()
-        {
-            return $"{PersID,3}: {FirstName} {LastName}, {Department}";
-        }
+        /// <summary>
+        /// Формирует строковое представление
+        /// </summary>
+        /// <returns>Строковое представление</returns>
+        //public override string ToString()
+        //{
+        //    return $"{PersID,3}: {FirstName} {LastName}, {Department}";
+        //}
 
     }
 }

@@ -7,11 +7,31 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <ComboBox x:Name="ListDepartments" HorizontalAlignment="Left" Margin="433,10,0,0" VerticalAlignment="Top" Width="349"/>
+        <ComboBox x:Name="ListDepartments" 
+                  ToolTip="Department Information"
+                  HorizontalAlignment="Left" Margin="433,10,0,0" VerticalAlignment="Top" Width="349"/>
         <ListView x:Name="ListEmployees" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="418">
             <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
+                <GridView AllowsColumnReorder="true"
+                        ColumnHeaderToolTip="Employee Information">
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=PersID}" Header="Personal ID" Width="70"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=FirstName}" Header="First Name" Width="100"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=LastName}" Width="100">
+                        <GridViewColumnHeader>Last Name
+                            <GridViewColumnHeader.ContextMenu>
+                                <ContextMenu  MenuItem.Click="LastNameCM_Click"  
+                                        Name="LastNameCM">
+                                    <MenuItem Header="Ascending" />
+                                    <MenuItem Header="Descending" />
+                                </ContextMenu>
+                            </GridViewColumnHeader.ContextMenu>
+                        </GridViewColumnHeader>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Department}" Width="120">
+                        <GridViewColumnHeader>Department
+
+                        </GridViewColumnHeader>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
