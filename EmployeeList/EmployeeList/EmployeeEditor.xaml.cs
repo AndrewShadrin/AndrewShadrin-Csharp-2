@@ -10,32 +10,27 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace EmployeeList
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для EmployeeEditor.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class EmployeeEditor : Window
     {
-        public MainWindow()
+        public Employee employee;
+
+        public EmployeeEditor(Employee empl)
         {
             InitializeComponent();
-
-            DataContext = new ApplicationViewModel();
-
+            employee = empl;
+            FirstName.Text = employee.FirstName;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (ListEmployees.SelectedItem!=null)
-            {
-                // тут как-то надо удалить сотрудника из списка...
-            }
+
         }
-
-
     }
 }

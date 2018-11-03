@@ -1,10 +1,13 @@
 ﻿
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 namespace EmployeeList
 {
     /// <summary>
     /// Представляет описание класса "Подразделение"
     /// </summary>
-    class Department
+    public class Department : INotifyPropertyChanged
     {
         /// <summary>
         /// Хранилище максимального номера
@@ -38,6 +41,15 @@ namespace EmployeeList
         public override string ToString()
         {
             return $"{ID}: {Name}";
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName]string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace EmployeeList
     /// <summary>
     /// Предоставляет описание класса "Организация"
     /// </summary>
-    class Organization
+    public class Organization
     {
         /// <summary>
         /// Код организации
