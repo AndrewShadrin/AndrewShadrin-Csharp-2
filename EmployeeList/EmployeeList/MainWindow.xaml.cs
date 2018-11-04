@@ -23,19 +23,6 @@ namespace EmployeeList
         public MainWindow()
         {
             InitializeComponent();
-
-            DataContext = new ApplicationViewModel();
-
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (ListEmployees.SelectedItem!=null)
-            {
-                // тут как-то надо удалить сотрудника из списка...
-            }
-        }
-
-
     }
 }

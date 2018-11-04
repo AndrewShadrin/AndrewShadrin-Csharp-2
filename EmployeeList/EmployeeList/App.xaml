@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:EmployeeList"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:ApplicationViewModel x:Key="AppViewModel"/>
     </Application.Resources>
 </Application>
