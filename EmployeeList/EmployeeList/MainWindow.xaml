@@ -17,7 +17,8 @@
             <ColumnDefinition Width="0.5*" />
         </Grid.ColumnDefinitions>
         <ListView Grid.Column="0" x:Name="ListEmployees" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                  ItemsSource="{Binding Employees}">
+                  ItemsSource="{Binding Employees}"
+                  SelectedItem="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Employee Information">
                     <GridViewColumn DisplayMemberBinding="{Binding Path=PersID}" Header="Pers. ID" Width="50"/>
@@ -27,7 +28,6 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Column="1" Content="Удалить сотрудника из списка" HorizontalAlignment="Stretch" Height="33" VerticalAlignment="Bottom"/>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Height="100" VerticalAlignment="Stretch" Width="5"/>
 
         <StackPanel Grid.Column="1" VerticalAlignment="Top" DataContext="{Binding ElementName=ListEmployees, Path=SelectedValue}">
@@ -41,6 +41,14 @@
                       SelectedValue="{Binding Department, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" />
             <TextBlock Text="Оклад" Margin="5"/>
             <TextBox Text="{Binding Salary, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+            <Button Content="Добавить сотрудника в список" HorizontalAlignment="Stretch" Height="33" Margin="0,5,0,5"
+                Command="{Binding AddCommand}"
+                CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Удалить сотрудника из списка" HorizontalAlignment="Stretch" Height="33" Margin="0,5,0,5"
+                Command="{Binding RemoveCommand}"
+                CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
         <ComboBox Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
 
