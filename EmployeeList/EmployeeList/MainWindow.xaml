@@ -5,27 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmployeeList"
         mc:Ignorable="d"
-        Title="Employee List" Height="450" Width="800">
+        Title="Employee List" Height="450" Width="903.846">
+    <Window.DataContext>
+        <Binding Source="{StaticResource AppViewModel}"/>
+    </Window.DataContext>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="0.8*" />
-            <ColumnDefinition Width="0.8*" />
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.5*" />
         </Grid.ColumnDefinitions>
-        <!--<ListBox Grid.Column="0" ItemsSource="{Binding Employees}"
-                 SelectedItem="{Binding SelectedEmployee}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="5">
-                        <TextBlock FontSize="18" Text="{Binding Path=FirstName}" />
-                        <TextBlock Text="{Binding Path=LastName}" />
-                        <TextBlock Text="{Binding Path=Department}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
         <ListView Grid.Column="0" x:Name="ListEmployees" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                  ItemsSource="{Binding Employees}">
+                  Margin="5,0"
+                  ItemsSource="{Binding Employees}"
+                  SelectedItem="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Employee Information">
                     <GridViewColumn DisplayMemberBinding="{Binding Path=PersID}" Header="Pers. ID" Width="50"/>
@@ -35,21 +29,45 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Column="1" Content="Удалить сотрудника из списка" HorizontalAlignment="Stretch" Height="33" VerticalAlignment="Bottom" Click="Button_Click"/>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Left" Height="100" VerticalAlignment="Stretch" Width="5"/>
 
         <StackPanel Grid.Column="1" VerticalAlignment="Top" DataContext="{Binding ElementName=ListEmployees, Path=SelectedValue}">
-            <TextBlock Text="Выбранный сотрудник"  />
-            <TextBlock Text="Имя" />
+            <TextBlock Text="Выбранный сотрудник"  Margin="5" />
+            <TextBlock Text="Имя" Margin="5"/>
             <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Фамилия" />
+            <TextBlock Text="Фамилия"  Margin="5"/>
             <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Подразделение" />
-            <TextBox Text="{Binding Department, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBlock Text="Оклад" />
+            <TextBlock Text="Подразделение"  Margin="5"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource AppViewModel}, Path=Departments}"
+                      SelectedValue="{Binding Department, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" />
+            <TextBlock Text="Оклад" Margin="5"/>
             <TextBox Text="{Binding Salary, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
-        <ComboBox Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
-
+        <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+            <Button Content="Добавить сотрудника в список" HorizontalAlignment="Stretch" Height="33" Margin="0,5,0,5"
+                Command="{Binding AddCommand}"
+                CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Удалить сотрудника из списка" HorizontalAlignment="Stretch" Height="33" Margin="0,5,0,5"
+                Command="{Binding RemoveCommand}"
+                CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <StackPanel Grid.Column="2" >
+            <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
+            <TreeView 
+                Grid.Column="2" 
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch" 
+                ItemsSource="{Binding Path=Employees}" Height="390"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Path=Department}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FirstName}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding LastName}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </StackPanel>
     </Grid>
 </Window>
