@@ -9,7 +9,7 @@
     <Window.DataContext>
         <Binding Source="{StaticResource AppViewModel}"/>
     </Window.DataContext>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -17,6 +17,7 @@
             <ColumnDefinition Width="0.5*" />
         </Grid.ColumnDefinitions>
         <ListView Grid.Column="0" x:Name="ListEmployees" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  Margin="5,0"
                   ItemsSource="{Binding Employees}"
                   SelectedItem="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
@@ -50,7 +51,23 @@
                 Command="{Binding RemoveCommand}"
                 CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
-        <ComboBox Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
-
+        <StackPanel Grid.Column="2" >
+            <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
+            <TreeView 
+                Grid.Column="2" 
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch" 
+                ItemsSource="{Binding Path=Employees}" Height="390"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Path=Department}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FirstName}" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding LastName}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </StackPanel>
     </Grid>
 </Window>
