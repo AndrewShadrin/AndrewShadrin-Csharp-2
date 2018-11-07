@@ -4,12 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EmployeeList"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:dat="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
         mc:Ignorable="d"
         Title="Employee List" Height="450" Width="903.846">
     <Window.DataContext>
         <Binding Source="{StaticResource AppViewModel}"/>
     </Window.DataContext>
-
+    <Window.Resources>
+    <CollectionViewSource Source="{Binding Employees}" x:Key="cvs" >
+        
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="LastName"/>
+        </CollectionViewSource.SortDescriptions>
+        <CollectionViewSource.GroupDescriptions>
+            <dat:PropertyGroupDescription PropertyName="Department"/>
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+        <HierarchicalDataTemplate x:Key="EmployeeTemplate" 
+                              ItemsSource="{Binding Path=LastName}">
+            
+            <TextBlock Text="{Binding Path=Department}" ></TextBlock>
+            
+        </HierarchicalDataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -51,23 +69,32 @@
                 Command="{Binding RemoveCommand}"
                 CommandParameter="{Binding SelectedEmployee, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
-        <StackPanel Grid.Column="2" >
+        <StackPanel Grid.Column="2">
             <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Path=Departments, UpdateSourceTrigger=PropertyChanged}" IsEditable="True"/>
             <TreeView 
                 Grid.Column="2" 
                 HorizontalAlignment="Stretch" 
                 VerticalAlignment="Stretch" 
-                ItemsSource="{Binding Path=Employees}" Height="390"
+                ItemsSource="{Binding Source={StaticResource cvs}}" Height="198"
+                ItemTemplate="{StaticResource EmployeeTemplate}"
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Path=Department}">
-                        <StackPanel Orientation="Horizontal">
+               <!--<TreeView.ItemTemplate>
+                    <DataTemplate>
+                        --><!--<StackPanel Orientation="Horizontal">
+                            
                             <TextBlock Text="{Binding FirstName}" Margin="0,0,5,0"/>
                             <TextBlock Text="{Binding LastName}" />
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
+                        </StackPanel>--><!--
+
+                    </DataTemplate>
+                </TreeView.ItemTemplate>-->
             </TreeView>
+            <ListBox ItemsSource="{Binding Source={StaticResource cvs}}"
+         DisplayMemberPath="FirstName" x:Name="lb" Height="190" RenderTransformOrigin="0.53,-0.239">
+                <ListBox.GroupStyle>
+                    <x:Static Member="GroupStyle.Default"/>
+                </ListBox.GroupStyle>
+            </ListBox>
         </StackPanel>
     </Grid>
 </Window>
