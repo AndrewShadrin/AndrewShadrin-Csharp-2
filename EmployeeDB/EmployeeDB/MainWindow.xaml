@@ -1,0 +1,43 @@
+﻿<Window x:Class="EmployeeDB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EmployeeDB"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="900.512" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <DataGrid x:Name="EmployeeDataGrid"
+                  AutoGenerateColumns="False"
+                  EnableRowVirtualization="True"
+                  ItemsSource="{Binding}"
+                  Margin="10"
+                  HorizontalAlignment="Stretch"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="idColumn" Binding="{Binding Id}" Header="ID" IsReadOnly="True" Width="Auto"/>
+                <DataGridTextColumn x:Name="PeopleidColumn" Binding="{Binding People_Id}" Header="People ID" Width="Auto" Visibility="Hidden"/>
+                <DataGridTextColumn x:Name="FirstName" Binding="{Binding FirstName}" Header="First name" Width="Auto"/>
+                <DataGridTextColumn x:Name="LastName" Binding="{Binding LastName}" Header="Last name" Width="Auto"/>
+                <DataGridTextColumn x:Name="DepartmentidColumn" Binding="{Binding Department_Id}" Header="Department ID" Width="Auto" Visibility="Hidden"/>
+                <DataGridTextColumn x:Name="Department" Binding="{Binding Department}" Header="Department name" Width="Auto"/>
+                <DataGridTextColumn x:Name="SalaryColumn" Binding="{Binding Salary}" Header="Salary" Width="Auto"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+
+        <StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="10">
+        <Button x:Name="addButton" Content="Добавить" Click="addButton_Click" Width="70" Height="30" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center"/>
+        <Button x:Name="updateButton" Content="Изменить"  Click="updateButton_Click" Width="70" Height="30" HorizontalAlignment="Center" Margin="10" VerticalAlignment="Center"/>
+        <Button x:Name="deleteButton" Content="Удалить" Click="deleteButton_Click" Width="70" Height="30" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Window>
