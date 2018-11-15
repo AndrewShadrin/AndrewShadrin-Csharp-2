@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
 
 namespace SOAClient
 {
@@ -22,7 +23,6 @@ namespace SOAClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        //public List<EmployeeDBSOA.Models.Employee> employees;
         static HttpClient client = new HttpClient();
 
         public MainWindow()
@@ -40,7 +40,7 @@ namespace SOAClient
 
         private async void loadAllButton_Click(object sender, RoutedEventArgs e)
         {
-            List<EmployeeDBSOA.Models.Employee> employees = await GetProductsAsync(client.BaseAddress + "api/employees");
+            List<EmployeeDBSOA.Models.Employee> employees = await GetEmployeesAsync(client.BaseAddress + "api/employees");
             EmployeeDataGrid.ItemsSource = employees;
         }
 
@@ -64,7 +64,7 @@ namespace SOAClient
         /// </summary>
         /// <param name="path">строка для контроллера web-api вида 'api/employees'</param>
         /// <returns>Возвращает список сотрудников</returns>
-        static async Task<List<EmployeeDBSOA.Models.Employee>> GetProductsAsync(string path)
+        static async Task<List<EmployeeDBSOA.Models.Employee>> GetEmployeesAsync(string path)
         {
             List<EmployeeDBSOA.Models.Employee> employees = null;
             try
@@ -75,8 +75,9 @@ namespace SOAClient
                     employees = await response.Content.ReadAsAsync<List<EmployeeDBSOA.Models.Employee>>();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
             }
             return employees;
         }
@@ -86,7 +87,7 @@ namespace SOAClient
         /// </summary>
         /// <param name="path">строка для контроллера web-api вида 'api/employees/{Id}'</param>
         /// <returns>Возвращает сотрудника</returns>
-        static async Task<EmployeeDBSOA.Models.Employee> GetProductAsync(string path)
+        static async Task<EmployeeDBSOA.Models.Employee> GetEmployeeAsync(string path)
         {
             EmployeeDBSOA.Models.Employee employee = null;
             try

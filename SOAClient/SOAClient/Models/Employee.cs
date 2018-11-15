@@ -24,8 +24,9 @@ namespace EmployeeDBSOA.Models
         /// <summary>
         /// Подразделение
         /// </summary>
-        private int departmentId;
-        private string departmentName;
+        private Department department;
+        //private int departmentId;
+        //private string departmentName;
 
         /// <summary>
         /// День рождения
@@ -98,8 +99,9 @@ namespace EmployeeDBSOA.Models
         /// <summary>
         /// Подразделение организации / убрано в связи с проблемой сериализации до выяснения
         /// </summary>
-        public int DepartmentId { get => departmentId; set { departmentId = value; } }
-        public string DepartmentName { get => departmentName; set { departmentName = value; } }
+        public Department Department { get => department; set { department = value; } }
+        //public int DepartmentId { get => departmentId; set { departmentId = value; } }
+        //public string DepartmentName { get => departmentName; set { departmentName = value; } }
 
         /// <summary>
         /// Дата приема в организацию
@@ -130,8 +132,9 @@ namespace EmployeeDBSOA.Models
             Birthday = birthday;
             DateOfEmployment = dateEmpl;
             Salary = salary;
-            DepartmentId = depId;
-            DepartmentName = departmentName;
+            Department = new Department(depId,departmentName);
+            //DepartmentId = depId;
+            //DepartmentName = departmentName;
         }
 
         /// <summary>

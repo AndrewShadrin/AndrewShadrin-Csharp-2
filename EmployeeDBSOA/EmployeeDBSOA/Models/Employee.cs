@@ -24,8 +24,8 @@ namespace EmployeeDBSOA.Models
         /// <summary>
         /// Подразделение
         /// </summary>
-        private int departmentId;
-        private string departmentName;
+        //private int departmentId;
+        //private string departmentName;
 
         /// <summary>
         /// День рождения
@@ -46,6 +46,7 @@ namespace EmployeeDBSOA.Models
         /// Дата приема
         /// </summary>
         private DateTime _dateOfEmployment;
+        private Department department;
 
         #endregion
 
@@ -98,8 +99,9 @@ namespace EmployeeDBSOA.Models
         /// <summary>
         /// Подразделение организации / убрано в связи с проблемой сериализации до выяснения
         /// </summary>
-        public int DepartmentId { get => departmentId; set { departmentId = value; } }
-        public string DepartmentName { get => departmentName; set { departmentName = value; } }
+        public Department Department { get => department; set { department = value; } }
+        //public int DepartmentId { get => departmentId; set { departmentId = value; } }
+        //public string DepartmentName { get => departmentName; set { departmentName = value; } }
 
         /// <summary>
         /// Дата приема в организацию
@@ -122,7 +124,7 @@ namespace EmployeeDBSOA.Models
         /// <param name="dateEmpl">Дата приема</param>
         /// <param name="salary">Оклад</param>
         /// <param name="department">Подразделение</param>
-        public Employee(int persId, string firstName, string lastName,  int salary, string departmentName, int depId, DateTime birthday, DateTime dateEmpl)
+        public Employee(int persId, string firstName, string lastName,  int salary, Department department, DateTime birthday, DateTime dateEmpl)
         {
             PersID = persId;
             FirstName = firstName;
@@ -130,8 +132,8 @@ namespace EmployeeDBSOA.Models
             Birthday = birthday;
             DateOfEmployment = dateEmpl;
             Salary = salary;
-            DepartmentId = depId;
-            DepartmentName = departmentName;
+            Department = department;
+            //DepartmentName = departmentName;
         }
 
         /// <summary>

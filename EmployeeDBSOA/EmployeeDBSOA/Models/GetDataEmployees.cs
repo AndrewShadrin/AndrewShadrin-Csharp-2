@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
+using Newtonsoft.Json;
 
 namespace EmployeeDBSOA.Models
 {
@@ -37,8 +38,9 @@ namespace EmployeeDBSOA.Models
                         //temp.Birthday = (DateTime)reader["Birthday"];
                         temp.FirstName = reader["FirstName"].ToString();
                         temp.LastName = reader["LastName"].ToString();
-                        temp.DepartmentId = Convert.ToInt32(reader["DepartmentId"]);
-                        temp.DepartmentName = reader["DepartmentName"].ToString();
+                        temp.Department = new Department(Convert.ToInt32(reader["DepartmentId"]), reader["DepartmentName"].ToString());
+                        //temp.DepartmentId = Convert.ToInt32(reader["DepartmentId"]);
+                        //temp.DepartmentName = reader["DepartmentName"].ToString();
                         try
                         {
                             temp.Salary = reader.GetInt32(reader.GetOrdinal("Salary"));
@@ -51,9 +53,7 @@ namespace EmployeeDBSOA.Models
                         list.Add(temp);
                     }
                 }
-
             }
-
             return list;
         }
 
@@ -73,8 +73,9 @@ namespace EmployeeDBSOA.Models
                         //temp.Birthday = (DateTime)reader["Birthday"];
                         temp.FirstName = reader["FirstName"].ToString();
                         temp.LastName = reader["LastName"].ToString();
-                        temp.DepartmentId = Convert.ToInt32(reader["DepartmentId"]);
-                        temp.DepartmentName = reader["DepartmentName"].ToString();
+                        temp.Department = new Department(Convert.ToInt32(reader["DepartmentId"]), reader["DepartmentName"].ToString());
+                        //temp.DepartmentId = Convert.ToInt32(reader["DepartmentId"]);
+                        //temp.DepartmentName = reader["DepartmentName"].ToString();
                         try
                         {
                             temp.Salary = reader.GetInt32(reader.GetOrdinal("Salary"));
