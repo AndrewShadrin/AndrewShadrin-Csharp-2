@@ -28,7 +28,7 @@
                 <DataGridTextColumn x:Name="FirstName" Binding="{Binding FirstName}" Header="First name" Width="Auto"/>
                 <DataGridTextColumn x:Name="LastName" Binding="{Binding LastName}" Header="Last name" Width="Auto"/>
                 <DataGridTextColumn x:Name="DepartmentidColumn" Binding="{Binding DepartmentId}" Header="Department ID" Width="Auto" Visibility="Hidden"/>
-                <DataGridTextColumn x:Name="Department" Binding="{Binding DepartmentName}" Header="Department name" Width="Auto"/>
+                <DataGridTextColumn x:Name="Department" Binding="{Binding Department}" Header="Department name" Width="Auto"/>
                 <DataGridTextColumn x:Name="SalaryColumn" Binding="{Binding Salary}" Header="Salary" Width="Auto"/>
             </DataGrid.Columns>
 

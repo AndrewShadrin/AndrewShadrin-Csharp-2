@@ -30,8 +30,9 @@ namespace SOAClient
         {
             PersId.Text = employee.PersID.ToString();
             //PeopleId.Text = employee.People_Id.ToString();
-            DepartmentId.Text = employee.DepartmentId.ToString();
-            DepartmentName.Text = employee.DepartmentName;
+            //DepartmentId.Text = employee.DepartmentId.ToString();
+            //DepartmentName.Text = employee.DepartmentName;
+            DepartmentName.Text = employee.Department.Name;
             FirstName.Text = employee.FirstName;
             LastName.Text = employee.LastName;
             Salary.Text = employee.Salary.ToString();
@@ -40,7 +41,7 @@ namespace SOAClient
         {
             employee.PersID = Convert.ToInt32(PersId.Text);
             //employee["People_Id"] = PeopleId.Text;
-            employee.DepartmentId = Convert.ToInt32(DepartmentId.Text);
+            //employee.DepartmentId = Convert.ToInt32(DepartmentId.Text);
             employee.Salary = Convert.ToInt32(Salary.Text);
             this.DialogResult = true;
         }
